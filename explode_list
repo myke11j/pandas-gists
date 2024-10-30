@@ -1,0 +1,36 @@
+import pandas as pd
+
+# Sample DataFrame
+df = pd.DataFrame({
+    'id': [1, 2],
+    'items': [
+        [{'field1': 'A', 'field2': 10}, {'field1': 'B', 'field2': 20}],
+        [{'field1': 'C', 'field2': 30}]
+    ]
+})
+
+df_exploded = df.explode('items', ignore_index=True)
+
+# Step 2: Normalize the objects within 'items' and concatenate with the original DataFrame
+df_final = pd.concat([df_exploded.drop(columns=['items']), df_exploded['items'].apply(pd.Series)], axis=1)
+
+print(df_final)
+
+old_api = pd.DataFrame({'betType': ['single', 'double', 'triple', 'single']})
+new_api = pd.DataFrame({'betType': ['triple', 'quadruple', 'double', 'single']})
+
+# Step 1: Extract unique `betType` values
+old_bet_types = old_api['betType'].unique()
+new_bet_types = new_api['betType'].unique()
+
+# Step 2: Create DataFrames
+df_old = pd.DataFrame({'betType': old_bet_types, 'source': 'old_api'})
+df_new = pd.DataFrame({'betType': new_bet_types, 'source': 'new_api'})
+
+# Step 3: Concatenate the DataFrames
+df_combined = pd.concat([df_old, df_new], ignore_index=True)
+
+# Optional: Drop duplicates if you want unique `betType` across both
+df_combined.drop_duplicates(subset=['betType'], inplace=True)
+
+print(df_combined)
